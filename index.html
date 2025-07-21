@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fluid Animation Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #222;
+        }
+        #fluid-bg {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            z-index: 0;
+        }
+        .login-container {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255,255,255,0.15);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            padding: 40px 30px;
+            z-index: 1;
+            width: 320px;
+            backdrop-filter: blur(10px);
+        }
+        .login-container h2 {
+            color: #fff;
+            text-align: center;
+            margin-bottom: 24px;
+            font-weight: 600;
+        }
+        .login-container input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+            font-size: 1em;
+            outline: none;
+            transition: background 0.2s;
+        }
+        .login-container input:focus {
+            background: rgba(255,255,255,0.35);
+        }
+        .login-container button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #00c6fb;
+            color: #fff;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 16px;
+            transition: background 0.2s;
+        }
+        .login-container button:hover {
+            background: #005bea;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="fluid-bg"></canvas>
+    <div class="login-container">
+        <h2>Login</h2>
+        <form>
+            <input type="text" placeholder="Username" required>
+            <input type="password" placeholder="Password" required>
+            <button type="submit">Sign In</button>
+        </form>
+    </div>
+    <script>
+        // Simple interactive fluid animation
+        const canvas = document.getElementById('fluid-bg');
+        const ctx = canvas.getContext('2d');
+        let width = window.innerWidth;
+        let height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+
+        // Fluid blobs
+        const blobs = [];
+        const colors = ['#00c6fb', '#005bea', '#00ffb9', '#ffb347', '#ff5e62'];
+        for (let i = 0; i < 5; i++) {
+            blobs.push({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                r: 80 + Math.random() * 60,
+                vx: (Math.random() - 0.5) * 2,
+                vy: (Math.random() - 0.5) * 2,
+                color: colors[i % colors.length]
+            });
+        }
+
+        // Mouse interaction
+        let mouse = {x: width/2, y: height/2};
+        canvas.addEventListener('mousemove', e => {
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+        });
+
+        function drawBlob(blob) {
+            ctx.beginPath();
+            ctx.arc(blob.x, blob.y, blob.r, 0, Math.PI * 2);
+            ctx.fillStyle = blob.color + '88';
+            ctx.shadowColor = blob.color;
+            ctx.shadowBlur = 40;
+            ctx.fill();
+            ctx.shadowBlur = 0;
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            blobs.forEach(blob => {
+                // Move blobs
+                blob.x += blob.vx;
+                blob.y += blob.vy;
+
+                // Bounce off edges
+                if (blob.x - blob.r < 0 || blob.x + blob.r > width) blob.vx *= -1;
+                if (blob.y - blob.r < 0 || blob.y + blob.r > height) blob.vy *= -1;
+
+                // Mouse attraction
+                let dx = mouse.x - blob.x;
+                let dy = mouse.y - blob.y;
+                let dist = Math.sqrt(dx*dx + dy*dy);
+                if (dist < 200) {
+                    blob.vx += dx * 0.0005;
+                    blob.vy += dy * 0.0005;
+                }
+
+                // Friction
+                blob.vx *= 0.98;
+                blob.vy *= 0.98;
+
+                drawBlob(blob);
+            });
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', () => {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+        });
+
+        animate();
+    </script>
+</body>
+</html>
