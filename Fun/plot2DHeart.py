@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
- 
+ # f\left(x\right)=\left(\sqrt[3]{x}\right)^{2}+\ \frac{e}{3}\cdot\sqrt{\left(\pi-x^{2}\right)}\cdot\sin\left(a\pi x\right)
 a = 16.7
 x = np.linspace(-np.sqrt(np.pi), np.sqrt(np.pi), 1000)
 x_pow = np.cbrt(x)**2
